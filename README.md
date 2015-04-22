@@ -11,8 +11,8 @@ opening. This will prevent the bowl from opening when, for example, the dog
 starts barking at the mailman.
 
 More details for the design can be found in the proposal. Datasheets for the
-parts I am using are in the `datasheets` directory. All schematics for the
-circuits in my design are in the `schematics` directory.
+parts I am using are in the `doc` directory. All schematics for the
+circuits in my design are in the `sch` directory.
 
 Feel free to use any part of this design that you find useful. Obviously, the
 Honor Code prevents other students from using this on their own EE 90 projects.
