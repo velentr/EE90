@@ -1,6 +1,12 @@
+# LaTeX intermediate files
 *.fls
 *.aux
 *.log
 *.out
 *.fdb_latexmk
 
+# Vim backup files
+*.swp
+
+# Dia backup files
+*~

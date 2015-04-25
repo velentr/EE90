@@ -1,16 +1,31 @@
-\documentclass[12pt]{article}
-\usepackage{bkdoc}
-\usepackage{bkfont}
+\documentclass[10pt]{article}
+
+\usepackage[margin=1.3in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage[bookmarks, pdfauthor={Brian Kubisiak}]{hyperref}
+\usepackage[parfill]{parskip}
+\usepackage{todonotes}
 \usepackage{tabularx}
 \usepackage{siunitx}
 \usepackage{tikz}
 \usepackage{circuitikz}
-% \usepackage{bkmath}
-% \usepackage{bkstat}
-% \usepackage{bksci}
-% \usepackage{bkcode}
+\usepackage{fontspec}
+\usepackage{listings}
 
-\def\doctitle{EE 90 Project Proposal}
+
+% set options for fancy header
+\pagestyle{fancyplain}
+\date{}
+\setlength{\headheight}{18pt}
+
+% code input
+\lstset{basicstyle=\ttfamily\footnotesize, numbers=left, frame=single, tabsize=4}
+
+\setmainfont{Source Serif Pro}
+\setmonofont{Source Code Pro}
+
+\def\doctitle{EE 90 Project Documentation}
 \hypersetup{pdftitle={\doctitle}}
 
 \title{Smart Dog Bowl Using FFT Analysis of Dog's Bark}
@@ -64,8 +79,12 @@ the analysis will not get a distance measurement to the dog. In order to
 overcome this, I will use ultrasonic ranging sensors to determine whether or not
 the dog is within a \SI{1}{ft} radius.
 
-\section{Design Overview}
-\label{sec:design_overview}
+\section{Operation}
+\label{sec:operation}
+
+My design comprises a microphone with an audio amplifier, triggering logic for
+generating interrupts, an Arduino for performing the signal processing, and a
+servo motor for opening the dog bowl.
 
 All of the signal processing for this design will be performed on an Arduino
 board. The processor will sample the dog's bark, then perform an FFT on the data
@@ -89,28 +108,42 @@ A block diagram for this design is shown in figure (\ref{fig:diagram}).
 
 \begin{figure}[h]
     \centering
-    \begin{tikzpicture}[node distance=2.7cm]
-        \node[draw, rectangle, minimum width=4cm, minimum height=7cm] (uc)
-        {Arduino};
-        \draw[stealth-] (uc.130) -- ++(-1.5cm,0) node[circ] (n1) {} --
-        ++(-2.5cm,0) node[draw,rectangle,minimum width=2cm, minimum height=2cm,
-        fill=white] (mic) {\small Microphone};
-        \draw[stealth-] (uc.220) -- ++(-4cm,0) node[draw,rectangle,
-        align=center, text width=1.8cm, minimum width=2cm, minimum
-        height=4cm,fill=white] (range) {Proximity Sensor Array};
-        \draw[-stealth] (n1) -- ++(0,-1cm) node[draw,rectangle, fill=white]
-        (trig) {Trigger} -- (uc.145);
-        \node[draw=none, right of=n1] (t1) {\small Analog Input};
-        \node[draw=none, right of=trig, xshift=-0.3cm] (t2) {\small Interrupt};
-        \node[draw=none, right of=range, xshift=2.6cm] (t3) {\small Digital
-            Inputs};
-        \node[draw,rectangle, minimum width=3cm, minimum height=3cm, right
-        of=uc,xshift=3cm] (servo) {Servo};
-        \draw[-stealth] (uc) -- (servo);
-        \node[draw=none, left of=servo, xshift=-1.5cm] (t4) {\scriptsize PWM};
-    \end{tikzpicture}
-    \caption{Block diagram for my project.}
+    \includegraphics[width=0.4\linewidth]{sch/top-level.png}
+    \caption{Top-level block diagram for the dog bowl.}
 \label{fig:diagram}
+\end{figure}
+
+\subsection{Microphone Circuitry}
+\label{sub:microphone_circuitry}
+
+All of the microphone circuitry is detailed in figure~(\ref{fig:microphone}).
+
+The microphone is powered from Vcc through a \SI{2.2}{\kilo\ohm} resistor,
+as recommended in the data sheet. The signal is then lowpass-filtered before
+being fed into the amplifier. The lowpass filter is designed with a corner
+frequency of \SI{10}{\hertz} using R2 = \SI{100}{\kilo\ohm} and C1 =
+\SI{1}{\micro\farad}. This will filter out the DC component without affecting
+the AC signal.
+
+The audio amplifier uses an op-amp with a single-sided supply in order to
+amplify the input signal. The amplifier is arranged in a noninverting
+configuration, with a total amplification factor of 560 (\SI{27.5}{\deci\bel}).
+The resistor Rf can be adjusted as needed to change the amplification. Note
+that the AC input may go below ground, but this will be clipped by the
+amplifier.
+
+The output of the amplifier is then fed directly into the ADC on the Arduino
+board. This amplified signal is also fed into the comparator U2 in order to
+generate an interrupt to tell the Arduino to begin recording the audio. The
+trigger level is set with R4 and R5. I have found that a level of around
+\SI{1.7}{\volt} works well. This interrupt trigger is fed into a GPIO pin on the
+Arduino to generate an interrupt.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{sch/microphone.png}
+    \caption{Microphone amplifier and trigger generator.}
+\label{fig:microphone}
 \end{figure}
 
 \section{Schedule}
