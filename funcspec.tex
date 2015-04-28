@@ -1,6 +1,6 @@
-\documentclass[10pt]{article}
+\documentclass[11pt]{article}
 
-\usepackage[margin=1.3in]{geometry}
+\usepackage[margin=1.0in]{geometry}
 \usepackage{fancyhdr}
 \usepackage{booktabs}
 \usepackage[bookmarks, pdfauthor={Brian Kubisiak}]{hyperref}
@@ -146,47 +146,63 @@ Arduino to generate an interrupt.
 \label{fig:microphone}
 \end{figure}
 
-\section{Schedule}
-\label{sec:schedule}
+\subsection{Proximity Sensor Array}
+\label{sub:proximity_sensor_array}
 
-For the duration of this term, I will attempt to observe the following schedule.
-Note that some of the tasks near the end of the term are simpler and some can be
-eliminated entirely if I lack the time to implement them. This allows for some
-flexibility in case I fall behind in the beginning of the term.
+The proximity sensor array is shown in figure~(\ref{fig:rangefinders}).
 
-\setlength\extrarowheight{5pt}
-\begin{tabularx}{\textwidth}{c X}
-    Week & Tasks \\
-    \midrule
-    03/29 & This is the first week of the term. In this week, I will write my
-    project proposal, including a block diagram demonstrating my general plan
-    for the term. \\
-    04/05 & For this week, I will draw schematics for my circuitry. Since a
-    large part of the project is on the Arduino, the schematics will be fairly
-    small, elaborating the comparators for the rangers and the triggering
-    circuit. At the end of the week I will order all the parts I cannot get from
-    the stockroom. \\
-    04/12 & While waiting for the parts to be shipped, I will begin writing the
-    code for the Arduino board. This includes coding an FFT and code for
-    comparing the spectrum to a pre-recorded spectrum. Time-permitting, I will
-    also write code for interfacing with the hardware. \\
-    04/19 & Once my parts arrive, I will breadboard the microphone triggering
-    circuit and thoroughly test it. I will also make sure that the microphone
-    works with the Arduino board. \\
-    04/26 & This week, I will breadboard the ranging circuit and ensure that it
-    will work as a proximity sensor. The midterm demo is also during this week. \\
-    05/03 & Now that the hardware circuits should be working, I will write the
-    hardware interface code and test the circuits with the Arduino. \\
-    05/10 & All hardware and software should be debugged at this point. During
-    this week, I will construct the final circuitry on a prototyping board. \\
-    05/17 & At this point, the majority of the work is done. This week, I will
-    wire the servo and test to make sure I can control it properly. I will also
-    design the hardware I will use for the bowl. \\
-    05/24 & During this week, I will build the bowl and package the electronics. \\
-    05/31 & The project should be mostly done at this point. During this week, I
-    will finish up the packaging and the documentation for the project. \\
-    06/07 & Final demonstration.
-\end{tabularx}
+The sensor array is fed by five ultrasonic range finders. Each range finder
+outputs an analog voltage representing the distance to the nearest object (the
+exact relation is unspecified in the data sheet; I will figure out the relation
+once the sensors arrive in the mail). The output of these sensors will be fed
+into comparators, comparing them to a fixed voltage. This voltage will
+correspond to approximately \SI{1}{ft} from the ultrasonic sensors. The voltage
+is created using a voltage divider with the resistors R6 and R7.
+
+The outputs from all of these comparators will go into GPIO pins on the Arduino.
+When the microphone circuit triggers a recording, the Arduino will first check
+that at least one of the proximity sensors is triggered before computing the
+FFT of the recording.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{sch/rangefinders.png}
+    \caption{Circuit for the array of proximity sensors.}
+\label{fig:rangefinders}
+\end{figure}
+
+\subsection{Servo Motor}
+\label{sub:servo_motor}
+
+The servo motor is a standard Parallax servo motor with \SI{180}{\degree} of
+motion. The position of the servo is controlled through PWM\@. One of the PWM
+outputs on the Arduino will switch the servo between the open position and the
+closed position when needed.
+
+\section{Source Code Listing}
+\label{sec:source_code_listing}
+
+Note that the following code is still a work in progress.
+
+\subsection{FFT Function Declarations}
+\label{sub:fft_function_declarations}
+
+\lstinputlisting{src/fft.h}
+
+\subsection{FFT Code}
+\label{sub:fft_code}
+
+\lstinputlisting{src/fft.c}
+
+\subsection{Complex Number Data Type}
+\label{sub:complex_number_data_type}
+
+\lstinputlisting{src/data.h}
+
+\subsection{Complex Number Operations}
+\label{sub:complex_number_operations}
+
+\lstinputlisting{src/data.c}
 
 \end{document}
 
