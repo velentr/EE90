@@ -1,18 +1,15 @@
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}           % Set default font size, document style.
 
-\usepackage[margin=1.0in]{geometry}
-\usepackage{fancyhdr}
-\usepackage{booktabs}
+\usepackage[margin=1.2in]{geometry}     % Change margin sizes.
+\usepackage{fancyhdr}                   % Modify page header/footer.
 \usepackage[bookmarks, pdfauthor={Brian Kubisiak}]{hyperref}
-\usepackage[parfill]{parskip}
-\usepackage{todonotes}
-\usepackage{tabularx}
-\usepackage{siunitx}
-\usepackage{tikz}
-\usepackage{circuitikz}
-\usepackage{fontspec}
-\usepackage{listings}
-
+\usepackage[parfill]{parskip}           % Paragraph style.
+\usepackage{todonotes}                  % For adding TODO statements.
+\usepackage[mode=text]{siunitx}         % Units. Use main font instead of math.
+\usepackage{listings}                   % Listing source code
+\usepackage{sourceserifpro}             % Main font.
+\usepackage{sourcecodepro}              % Code font.
+\usepackage{microtype}                  % Justify paragraphs a little better.
 
 % set options for fancy header
 \pagestyle{fancyplain}
@@ -22,12 +19,10 @@
 % code input
 \lstset{basicstyle=\ttfamily\footnotesize, numbers=left, frame=single, tabsize=4}
 
-\setmainfont{Source Serif Pro}
-\setmonofont{Source Code Pro}
-
 \def\doctitle{EE 90 Project Documentation}
 \hypersetup{pdftitle={\doctitle}}
 
+% Add a title block.
 \title{Smart Dog Bowl Using FFT Analysis of Dog's Bark}
 \author{Brian Kubisiak \\ brian.kubisiak@gmail.com \\ MSC 606}
 
@@ -157,7 +152,8 @@ exact relation is unspecified in the data sheet; I will figure out the relation
 once the sensors arrive in the mail). The output of these sensors will be fed
 into comparators, comparing them to a fixed voltage. This voltage will
 correspond to approximately \SI{1}{ft} from the ultrasonic sensors. The voltage
-is created using a voltage divider with the resistors R6 and R7.
+is created using a voltage divider with the resistors R6 and R7. I have found
+that a voltage level of \SI{0.76}{\volt} works well.
 
 The outputs from all of these comparators will go into GPIO pins on the Arduino.
 When the microphone circuit triggers a recording, the Arduino will first check
