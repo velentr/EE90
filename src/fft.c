@@ -21,7 +21,7 @@
  *      16 Apr 2015     Brian Kubisiak      Initial revision.
  */
 
-
+#include <stdio.h>
 #include "fft.h"
 
 extern complex root[SAMPLE_SIZE];
@@ -67,7 +67,7 @@ void fft(complex *data)
      * always a power of two.
      */
     unsigned int stride;
-    unsigned char i, j, k;      /* Loop indices. */
+    unsigned int i, j, k;      /* Loop indices. */
 
 
     /* We start off with two separate clusters of butterflie nodes filling the
@@ -83,7 +83,7 @@ void fft(complex *data)
          * only go to 'SAMPLE_SIZE / 2', since each butterfly covers 2 data
          * points.
          */
-        for (j = 0; j < SAMPLE_SIZE / 2; j += stride + 1)
+        for (j = 0; j < SAMPLE_SIZE; j += 2*stride)
         {
             /*
              * Iterate over every butterfly in the cluster. This will use one

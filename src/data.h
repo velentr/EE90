@@ -9,14 +9,20 @@
  *
  * Revision History:
  *      16 Apr 2015     Brian Kubisiak      Initial revision.
+ *      04 Jun 2015     Brian Kubisiak      Changes to SAMPLE_SIZE macro.
  */
 
 #ifndef _DATA_H_
 #define _DATA_H_
 
 
-#define SAMPLE_SIZE         1024    /* Number of samples in the buffer. */
-#define LOG2_SAMPLE_SIZE    10      /* Base two logarithm of the sample size. */
+#include <math.h>
+
+
+#ifndef SAMPLE_SIZE
+#define SAMPLE_SIZE         256     /* Number of samples in the buffer. */
+#endif
+#define LOG2_SAMPLE_SIZE    log2(SAMPLE_SIZE)
 
 
 /*

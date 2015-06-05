@@ -5,6 +5,12 @@
 *.out
 *.fdb_latexmk
 
+# Intermediate files for code compilation
+*.o
+roots.c
+ee90-dogbowl
+test-fft
+
 # Vim backup files
 *.swp
 
