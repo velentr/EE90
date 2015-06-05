@@ -97,9 +97,17 @@ void fft(complex *data)
                 complex a = data[k];
                 complex b = data[k+stride];
 
+                /* Since the roots are stored in bit-reversed order, we can just
+                 * index into the array with the butterfly index. */
+                complex w = root[j];
+
+                /* The negative of the root is just 180 degrees around the unit
+                 * circle. */
+                complex neg_w = root[j + SAMPLE_SIZE / 2];
+
                 /* Now transform them using a butterfly. */
-                data[k]         = add(a, mul(b, root[k]));
-                data[k+stride]  = add(a, mul(b, root[k+LOG2_SAMPLE_SIZE]));
+                data[k]         = add(a, mul(b, w));
+                data[k+stride]  = add(a, mul(b, neg_w));
             }
         }
 
