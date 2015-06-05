@@ -5,11 +5,11 @@ import sys          # Command-line arguments
 import datetime     # Generating revision dates
 
 
-# Header string for including at the top of the generated .h file containing the
-# roots of unity. Assumes that the output will go into a file called 'roots.h'.
+# Header string for including at the top of the generated .c file containing the
+# roots of unity. Assumes that the output will go into a file called 'roots.c'.
 header = '''
 /*
- * roots.h
+ * roots.c
  *
  * Constants representing the roots of unity.
  *
@@ -26,9 +26,6 @@ header = '''
  * Last Generated:
  *      %s
  */
-
-#ifndef _ROOTS_H_
-#define _ROOTS_H_
 
 
 #include "data.h"
@@ -51,8 +48,6 @@ const complex root[SAMPLE_SIZE] = {'''
 datafooter = '''};'''
 
 footer = '''
-
-#endif /* _ROOTS_H_ */
 '''
 
 def genroots(n):
