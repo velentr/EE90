@@ -74,25 +74,26 @@ the analysis will not get a distance measurement to the dog. In order to
 overcome this, I will use ultrasonic ranging sensors to determine whether or not
 the dog is within a \SI{1}{ft} radius.
 
-\section{Operation}
+\section{Hardware Operation}
 \label{sec:operation}
 
 My design comprises a microphone with an audio amplifier, triggering logic for
-generating interrupts, an Arduino for performing the signal processing, and a
-servo motor for opening the dog bowl.
+generating interrupts, ultrasonic rangefinders for measuring proximity, an
+Arduino for performing the signal processing, and a servo motor for opening the
+dog bowl.
 
 All of the signal processing for this design will be performed on an Arduino
 board. The processor will sample the dog's bark, then perform an FFT on the data
-and compare it to save values. If the bark matches, the bowl will open.
+and compare it to saved values. If the bark matches, the bowl will open.
 
-There will be 4--6 ultrasonic proximity detectors to determine whether or not
-there is an object within \SI{1}{ft} of the bowl. This will consist of an
-ultrasonic range finder and circuitry comparing it to a reference range. This
-detector will output a digital 1 if there is an object within a foot, and a 0 if
-there is not.  Each range finder can detect in a \SI{15}{\degree} angle. By
-putting 4--6 of these in a circle around the bowl, they should be able to detect
-anything larger than a foot wide around the entire radius. More sensors can
-easily be used, at an increased cost.
+There will be 4 ultrasonic proximity detectors to determine whether or not there
+is an object within \SI{1}{ft} of the bowl. This will consist of an ultrasonic
+range finder and circuitry comparing it to a reference range. This detector will
+output a digital 1 if there is an object within a foot, and a 0 if there is not.
+Each range finder can detect in a \SI{15}{\degree} angle. By putting 4 of these
+in a circle around the bowl, they should be able to detect anything larger than
+a foot wide around the entire radius. More sensors can easily be used, at a
+slightly increased cost.
 
 The microphone will output a simple analog signal into the Arduino. In addition,
 some analog circuitry will be used to generate an interrupt whenever the analog
@@ -146,19 +147,24 @@ Arduino to generate an interrupt.
 
 The proximity sensor array is shown in figure~(\ref{fig:rangefinders}).
 
-The sensor array is fed by five ultrasonic range finders. Each range finder
-outputs an analog voltage representing the distance to the nearest object (the
-exact relation is unspecified in the data sheet; I will figure out the relation
-once the sensors arrive in the mail). The output of these sensors will be fed
-into comparators, comparing them to a fixed voltage. This voltage will
+The sensor array is fed by ultrasonic range finders. Each range finder outputs
+an analog voltage representing the distance to the nearest object (the exact
+relation is not important to this design). The output of these sensors will be
+fed into comparators, comparing them to a fixed voltage. This voltage will
 correspond to approximately \SI{1}{ft} from the ultrasonic sensors. The voltage
 is created using a voltage divider with the resistors R6 and R7. I have found
-that a voltage level of \SI{0.76}{\volt} works well.
+that a voltage level of \SI{0.76}{\volt} works well for identifying objects
+approximately \SI{1}{ft} away.
 
 The outputs from all of these comparators will go into GPIO pins on the Arduino.
 When the microphone circuit triggers a recording, the Arduino will first check
 that at least one of the proximity sensors is triggered before computing the
 FFT of the recording.
+
+Note that the comparators used in my design are open drain, so they do not drive
+the output to Vcc; rather, they put the output in a high-impedance state that
+requires a pull-up resistor. The Arduino GPIO pins have internal pull-up
+resistors, so these are not included in my analog circuitry.
 
 \begin{figure}[h]
     \centering
@@ -175,7 +181,7 @@ motion. The position of the servo is controlled through PWM\@. One of the PWM
 outputs on the Arduino will switch the servo between the open position and the
 closed position when needed.
 
-\section{Source Code Listing}
+\section{Software Operation}
 \label{sec:source_code_listing}
 
 Note that the following code is still a work in progress.
@@ -199,6 +205,16 @@ Note that the following code is still a work in progress.
 \label{sub:complex_number_operations}
 
 \lstinputlisting{src/data.c}
+
+\subsection{Proximity Sensor Function Declarations}
+\label{sub:proximity_sensor_function_declarations}
+
+\lstinputlisting{src/proximity.h}
+
+\subsection{Proximity Sensor Functions}
+\label{sub:proximity_sensor_functions}
+
+\lstinputlisting{src/proximity.c}
 
 \end{document}
 
