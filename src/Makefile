@@ -5,10 +5,11 @@ LOG2SAMPLES =	8
 #CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
 		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES)
 CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
-		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES) -mmcu=avr6
+		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES) -D__AVR_ATmega2560__ \
+		-mmcu=avr6
 #LDFLAGS     =	-O2
 LDFLAGS     =	-O2 -mmcu=avr6
-OBJECTS	    =	data.o fft.o proximity.o roots.o
+OBJECTS	    =	adc.o data.o fft.o proximity.o roots.o
 
 all: ee90-dogbowl
 
@@ -17,6 +18,9 @@ ee90-dogbowl: $(OBJECTS)
 
 test-fft: $(OBJECTS) test-fft.o
 	$(CC) $(OBJECTS) test-fft.o $(LDFLAGS) -o test-fft
+
+adc.o: adc.c adc.h data.h
+	$(CC) $(CFLAGS) adc.c
 
 data.o: data.c data.h
 	$(CC) $(CFLAGS) data.c

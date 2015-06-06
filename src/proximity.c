@@ -19,12 +19,9 @@
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
  */
 
-#include "proximity.h"
+#include <avr/io.h>
 
-/* Define the addresses for controlling GPIO port A. */
-#define PINA_ADDR   0x20    /* Address for reading values off pins. */
-#define DDRA_ADDR   0x21    /* Address for configuring direction of pins. */
-#define PORTA_ADDR  0x22    /* Address for enabling pull-up resistors. */
+#include "proximity.h"
 
 /* Constants for setting the values of the control registers. */
 #define DDR_INPUT   0x00    /* Configure all pins as inputs. */
@@ -47,13 +44,9 @@
  */
 void init_prox_gpio(void)
 {
-    /* Get the addresses of the memory-mapped control registers. */
-    volatile unsigned char *dircfg = (volatile unsigned char *)DDRA_ADDR;
-    volatile unsigned char *pullupcfg = (volatile unsigned char *)PORTA_ADDR;
-
-    /* Set the configurations. */
-    *dircfg     = DDR_INPUT;
-    *pullupcfg  = PORT_PULLUP;
+    /* Set the configurations for IO port A. */
+    DDRA  = DDR_INPUT;
+    PORTA = PORT_PULLUP;
 }
 
 
@@ -74,10 +67,7 @@ void init_prox_gpio(void)
  */
 unsigned char is_obj_nearby(void)
 {
-    /* Get the address for the memory-mapped input register. */
-    volatile unsigned char *pins = (volatile unsigned char *)PINA_ADDR;
-
     /* Returns 0 if all pins are inactive, otherwise returns nonzero. */
-    return ACTIVE_PINS & (*pins);
+    return ACTIVE_PINS & (PINA);
 }
 
