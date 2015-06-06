@@ -64,6 +64,10 @@ void init_adc(void)
     ADCSRB  = ADCSRB_VAL;
     DIDR0   = DIDR0_VAL;
     DIDR2   = DIDR2_VAL;
+
+    /* Reset the buffer collection. */
+    bufidx  = 0;
+    buffull = 0;
 }
 
 /*
