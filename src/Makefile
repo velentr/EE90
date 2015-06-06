@@ -1,8 +1,14 @@
-CC	?=	gcc
-SAMPLES =	256
-CFLAGS	=	-O2 -c -Wall -Wstrict-prototypes -pedantic -DSAMPLE_SIZE=$(SAMPLES)
-LDFLAGS =	-O2
-OBJECTS	=	data.o fft.o roots.o
+#CC	    =	gcc
+CC	    =	avr-gcc
+SAMPLES     =	256
+LOG2SAMPLES =	8
+#CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
+		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES)
+CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
+		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES) -mmcu=avr6
+#LDFLAGS     =	-O2
+LDFLAGS     =	-O2 -mmcu=avr6
+OBJECTS	    =	data.o fft.o proximity.o roots.o
 
 all: ee90-dogbowl
 
@@ -17,6 +23,9 @@ data.o: data.c data.h
 
 fft.o: fft.c fft.h data.h
 	$(CC) $(CFLAGS) fft.c
+
+proximity.o: proximity.c proximity.h
+	$(CC) $(CFLAGS) proximity.c
 
 roots.c: genroots.py
 	python2 genroots.py $(SAMPLES) > roots.c

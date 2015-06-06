@@ -16,13 +16,11 @@
 #define _DATA_H_
 
 
-#include <math.h>
-
 
 #ifndef SAMPLE_SIZE
 #define SAMPLE_SIZE         256     /* Number of samples in the buffer. */
+#define LOG2_SAMPLE_SIZE    8
 #endif
-#define LOG2_SAMPLE_SIZE    log2(SAMPLE_SIZE)
 
 
 /*
