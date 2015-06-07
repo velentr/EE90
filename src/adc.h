@@ -11,12 +11,15 @@
  *
  * Peripherals Used:
  *      ADC
+ *      External interrupts
  *
  * Pins Used:
  *      PF0
+ *      PD0
  *
  * Revision History:
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
+ *      06 Jun 2015     Brian Kubisiak      Added external trigger.
  */
 
 #ifndef _ADC_H_
@@ -37,6 +40,8 @@
  *               - Enable ADC by writing to ADCSRA.
  *               - Left-adjust the data input by writing to ADMUX.
  *               - Set the trigger source using ADCSRB.
+ *               - Setting up interrupts for autotriggering.
+ *               - Setting up external interrupt.
  *
  * Notes:       This function will initialize the ADC to use PF0. If this pin is
  *              used for another purpose, these functions will not work
@@ -44,20 +49,6 @@
  */
 void init_adc(void);
 
-/*
- * adc_start_collection
- *
- * Description: Start collecting a new buffer of data. This function will enable
- *              auto-triggering off of the ADC interrupt and start a new
- *              conversion to start the chain of data collection. Once the
- *              buffer is full, the interrupt vector will disable the
- *              autotriggering automatically.
- *
- * Notes:       This function should not be called until the buffer is filled
- *              and data collection halts. This can be checked with the
- *              'is_data_collected' function.
- */
-void adc_start_collection(void);
 
 /*
  * adc_get_buffer
@@ -91,6 +82,21 @@ complex *adc_get_buffer(void);
  *              function is called.
  */
 unsigned char is_data_collected(void);
+
+/*
+ * adc_reset_buffer
+ *
+ * Description: Resets the data buffer that is filled by the ADC. This function
+ *              will clear empty the buffer and cause the ADC to begin filling
+ *              from the beginning. Note that this function does not start the
+ *              ADC data collection; the buffer will be refilled from the
+ *              beginning once the 'adc_start_collection' function is called.
+ *
+ * Notes:       This function should not be called while the buffer is in the
+ *              process of being filled. This may cause unexpected race
+ *              conditions.
+ */
+void adc_reset_buffer(void);
 
 
 #endif /* end of include guard: _ADC_H_ */

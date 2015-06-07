@@ -11,12 +11,15 @@
  *
  * Peripherals Used:
  *      ADC
+ *      External interrupts
  *
  * Pins Used:
  *      PF0
+ *      PD0
  *
  * Revision History:
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
+ *      06 Jun 2015     Brian Kubisiak      Added external trigger.
  */
 
 #include <avr/io.h>
@@ -31,44 +34,17 @@
 #define DIDR0_VAL   0x01
 #define DIDR2_VAL   0x00
 
+/* Initial values for external interrupt configuration. */
+#define EICRA_VAL   0x02
+#define EIMSK_VAL   0x01
+
 /* ORing this with ADCSRA will begin the data collection process. */
 #define ADCSTART    0x60
 
 static complex databuf[SAMPLE_SIZE];
 static unsigned int bufidx = 0;
 static unsigned char buffull = 0;
-
-/*
- * init_adc
- *
- * Description: This function initializes the ADC peripheral so that the proper
- *              pins are allocated for use. After this function, the ADC will
- *              *not* be running; the 'adc_start_collection' function should be
- *              called before data will be collected. This initialization
- *              involves:
- *               - Writing to ADMUX and ADCSRB to select the input channel.
- *               - Enable ADC by writing to ADCSRA.
- *               - Left-adjust the data input by writing to ADMUX.
- *               - Set the trigger source using ADCSRB.
- *               - Enable the ADC interrupt.
- *
- * Notes:       This function will initialize the ADC to use PF0. If this pin is
- *              used for another purpose, these functions will not work
- *              properly.
- */
-void init_adc(void)
-{
-    /* Set all the configuration registers to their initial values. */
-    ADMUX   = ADMUX_VAL;
-    ADCSRA  = ADCSRA_VAL;
-    ADCSRB  = ADCSRB_VAL;
-    DIDR0   = DIDR0_VAL;
-    DIDR2   = DIDR2_VAL;
-
-    /* Reset the buffer collection. */
-    bufidx  = 0;
-    buffull = 0;
-}
+static unsigned char collecting = 0;
 
 /*
  * adc_start_collection
@@ -83,7 +59,7 @@ void init_adc(void)
  *              and data collection halts. This can be checked with the
  *              'is_data_collected' function.
  */
-void adc_start_collection(void)
+static void adc_start_collection(void)
 {
     /* Reset the index to load values into the start of the buffer. */
     bufidx = 0;
@@ -91,8 +67,48 @@ void adc_start_collection(void)
     /* Buffer is no longer full. */
     buffull = 0;
 
+    /* Set the flag signaling that collection is in progress. */
+    collecting = 1;
+
     /* Enable autotriggering and start the first conversion. */
     ADCSRA |= ADCSTART;
+}
+
+/*
+ * init_adc
+ *
+ * Description: This function initializes the ADC peripheral so that the proper
+ *              pins are allocated for use. After this function, the ADC will
+ *              *not* be running; the 'adc_start_collection' function should be
+ *              called before data will be collected. This initialization
+ *              involves:
+ *               - Writing to ADMUX and ADCSRB to select the input channel.
+ *               - Enable ADC by writing to ADCSRA.
+ *               - Left-adjust the data input by writing to ADMUX.
+ *               - Set the trigger source using ADCSRB.
+ *               - Enable the ADC interrupt.
+ *               - Setting up interrupts for autotriggering.
+ *               - Setting up external interrupt.
+ *
+ * Notes:       This function will initialize the ADC and external interrupt to
+ *              use PF0 and PD0. If these pins are used for another purpose,
+ *              these functions will not work properly.
+ */
+void init_adc(void)
+{
+    /* Set all the configuration registers to their initial values. */
+    ADMUX   = ADMUX_VAL;
+    ADCSRA  = ADCSRA_VAL;
+    ADCSRB  = ADCSRB_VAL;
+    DIDR0   = DIDR0_VAL;
+    DIDR2   = DIDR2_VAL;
+
+    /* Reset the buffer collection. */
+    adc_reset_buffer();
+
+    /* Activate the external interrupt for triggering a recording. */
+    EICRA = EICRA_VAL;
+    EIMSK = EIMSK_VAL;
 }
 
 /*
@@ -137,6 +153,31 @@ unsigned char is_data_collected(void)
 
 
 /*
+ * adc_reset_buffer
+ *
+ * Description: Resets the data buffer that is filled by the ADC. This function
+ *              will clear empty the buffer and cause the ADC to begin filling
+ *              from the beginning. Note that this function does not start the
+ *              ADC data collection; the buffer will be refilled from the
+ *              beginning once the 'adc_start_collection' function is called.
+ *
+ * Notes:       This function should not be called while the buffer is in the
+ *              process of being filled. This may cause unexpected race
+ *              conditions.
+ */
+void adc_reset_buffer(void)
+{
+    /* Start buffer collection from the beginning. */
+    bufidx = 0;
+
+    /* Buffer is no longer full. */
+    buffull = 0;
+
+    /* No longer collecting data. */
+    collecting = 0;
+}
+
+/*
  * ADC_vect
  *
  * Description: Interrupt vector for the ADC interrupt. When this interrupt
@@ -176,3 +217,24 @@ ISR(ADC_vect)
     /* Interrupt flag is automatically turned off in hardware. */
 }
 
+/*
+ * INT0_vect
+ *
+ * Description: Triggers the ADC data collection on an external interrupt. Once
+ *              the amplitude of the audio input goes above a certain level,
+ *              this interrupt will fire and begin recording data. If data is
+ *              already being collected, or the buffer is already full, then the
+ *              interrupt will be ignored.
+ *
+ * Notes:       The interrupt should be automatically reset in hardware.
+ */
+ISR(INT0_vect)
+{
+    /* If we aren't already collecting, start the collection. */
+    if (!collecting) {
+        adc_start_collection();
+    }
+    /* Else, just ignore this interrupt. */
+
+    /* The interrupt flag is cleared automatically in hardware. */
+}

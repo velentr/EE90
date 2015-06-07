@@ -9,7 +9,7 @@ CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
 		-mmcu=avr6
 #LDFLAGS     =	-O2
 LDFLAGS     =	-O2 -mmcu=avr6
-OBJECTS	    =	adc.o data.o fft.o mainloop.o proximity.o roots.o
+OBJECTS	    =	adc.o data.o fft.o mainloop.o proximity.o pwm.o roots.o
 
 all: ee90-dogbowl
 
@@ -28,11 +28,14 @@ data.o: data.c data.h
 fft.o: fft.c fft.h data.h
 	$(CC) $(CFLAGS) fft.c
 
-mainloop.o: mainloop.c adc.h data.h fft.h proximity.h
+mainloop.o: mainloop.c adc.h data.h fft.h proximity.h pwm.h
 	$(CC) $(CFLAGS) mainloop.c
 
 proximity.o: proximity.c proximity.h
 	$(CC) $(CFLAGS) proximity.c
+
+pwm.o: pwm.c pwm.h
+	$(CC) $(CFLAGS) pwm.c
 
 roots.c: genroots.py
 	python2 genroots.py $(SAMPLES) > roots.c
