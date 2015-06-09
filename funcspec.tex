@@ -184,7 +184,23 @@ closed position when needed.
 \section{Software Operation}
 \label{sec:source_code_listing}
 
-Note that the following code is still a work in progress.
+The main loop for the software is a simple finite state machine, shown in
+figure~(\ref{fig:fsm}). The machine starts in the INIT state. Once data is
+available to analyze, the program checks if there is anything in the proximity
+of the bowl. If there is, then the FFT analysis is performed. If not, the data
+collection is reset.
+
+If the FFT analysis finds that the frequency spectrum matches the spectrum of
+the key, then the bowl is opened. Otherwise, the data collection is reset. Once
+the bowl is open, it will just wait until nothing is nearby (i.e.\ the proximity
+sensors are no longer activated). At this point, the bowl will be reset.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{sch/fsm.png}
+    \caption{Finite state machine for controlling the dogbowl.}
+\label{fig:fsm}
+\end{figure}
 
 \subsection{Analog Data Collection Function Declarations}
 \label{sub:data_collection_function_declarations}
@@ -215,6 +231,21 @@ Note that the following code is still a work in progress.
 \label{sub:fft_code}
 
 \lstinputlisting{src/fft.c}
+
+\subsection{Frequency Spectrum Key}
+\label{sub:frequency_spectrum_key}
+
+\lstinputlisting{src/key.c}
+
+\subsection{Generating Roots of Unity}
+\label{sub:generating_roots_of_unity}
+
+\lstinputlisting{src/genroots.py}
+
+\subsection{Main Loop}
+\label{sub:main_loop}
+
+\lstinputlisting{src/mainloop.c}
 
 \subsection{Proximity Sensor Function Declarations}
 \label{sub:proximity_sensor_function_declarations}
