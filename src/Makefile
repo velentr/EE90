@@ -1,6 +1,6 @@
 CC	    =	avr-gcc
-SAMPLES     =	256
-LOG2SAMPLES =	8
+SAMPLES     =	64
+LOG2SAMPLES =	6
 CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
 		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES) -D__AVR_ATmega2560__ \
 		-mmcu=avr6

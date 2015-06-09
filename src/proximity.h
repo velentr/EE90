@@ -17,6 +17,7 @@
  *
  * Revision History:
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
+ *      08 Jun 2015     Brian Kubisiak      Changed polarity of signals.
  */
 
 #ifndef _PROXIMITY_H_
@@ -50,7 +51,7 @@ void init_prox_gpio(void);
  * Return:      If no objects are in range of the ultrasonic sensors, returns 0.
  *              If one or more objects are in range, returns nonzero.
  *
- * Notes:       The return value uses the low 4 bits to represent the
+ * Notes:       The return value uses the even 4 bits to represent the
  *              rangefinders in each direction, so the number of triggered
  *              rangefinders can also be found from the return value.
  */

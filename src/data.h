@@ -18,8 +18,8 @@
 
 
 #ifndef SAMPLE_SIZE
-#define SAMPLE_SIZE         256     /* Number of samples in the buffer. */
-#define LOG2_SAMPLE_SIZE    8
+#define SAMPLE_SIZE         64      /* Number of samples in the buffer. */
+#define LOG2_SAMPLE_SIZE    6
 #endif
 
 

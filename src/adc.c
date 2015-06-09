@@ -30,13 +30,13 @@
 
 /* Initial values for the ADC configuration registers. */
 #define ADMUX_VAL   0x60
-#define ADCSRA_VAL  0x88
+#define ADCSRA_VAL  0x8F
 #define ADCSRB_VAL  0x00
 #define DIDR0_VAL   0x01
 #define DIDR2_VAL   0x00
 
 /* Initial values for external interrupt configuration. */
-#define EICRA_VAL   0x02
+#define EICRA_VAL   0x03
 #define EIMSK_VAL   0x01
 
 /* Add pullup resistor to interrupt pin. */

@@ -17,6 +17,7 @@
  *
  * Revision History:
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
+ *      08 Jun 2015     Brian Kubisiak      Changed polarity of signals.
  */
 
 #include <avr/io.h>
@@ -28,7 +29,7 @@
 #define PORT_PULLUP 0xFF    /* Activate all pull-up resistors. */
 
 /* Constant for masking out the unused pins. */
-#define ACTIVE_PINS 0x0F
+#define ACTIVE_PINS 0x55
 
 /*
  * init_prox_gpio
@@ -61,13 +62,13 @@ void init_prox_gpio(void)
  * Return:      If no objects are in range of the ultrasonic sensors, returns 0.
  *              If one or more objects are in range, returns nonzero.
  *
- * Notes:       The return value uses the low 4 bits to represent the
+ * Notes:       The return value uses the even 4 bits to represent the
  *              rangefinders in each direction, so the number of triggered
  *              rangefinders can also be found from the return value.
  */
 unsigned char is_obj_nearby(void)
 {
     /* Returns 0 if all pins are inactive, otherwise returns nonzero. */
-    return ACTIVE_PINS & (PINA);
+    return ACTIVE_PINS & (~PINA);
 }
 
