@@ -12,6 +12,8 @@
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
  */
 
+#include <avr/interrupt.h>
+
 #include "adc.h"
 #include "data.h"
 #include "fft.h"
@@ -55,6 +57,11 @@ int main(void)
     init_adc();
     init_prox_gpio();
     init_pwm();
+
+    DDRC = 0xFF;
+
+    /* Turn on interrupts. */
+    sei();
 
     /* Loop forever, until reset is applied or power is take away. */
     for (;;)

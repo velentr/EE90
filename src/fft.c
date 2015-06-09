@@ -28,7 +28,7 @@
 
 #include "fft.h"
 
-#define ERROR_THRESHOLD 10
+#define ERROR_THRESHOLD 30
 
 extern complex root[SAMPLE_SIZE];       /* Roots of unity for the FFT. */
 extern unsigned char key[SAMPLE_SIZE];  /* Spectrum that will open the bowl. */

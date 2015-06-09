@@ -21,8 +21,8 @@
 
 #include "pwm.h"
 
-#define BOWL_OPEN   0x00
-#define BOWL_CLOSED 0xFF
+#define BOWL_OPEN   30
+#define BOWL_CLOSED 15
 
 /*
  * init_pwm
@@ -38,7 +38,7 @@ void init_pwm(void)
 {
     DDRB = 0x80;    /* Enable output on the PWM pin. */
     TCCR0A = 0x83;  /* Set pin to fast PWM mode. */
-    TCCR0B = 0x01;
+    TCCR0B = 0x05;  /* Prescale clock by 1024. */
 
     /* Start out with the bowl closed. */
     pwm_close();
