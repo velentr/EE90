@@ -19,13 +19,19 @@
  *
  * Revision History:
  *      16 Apr 2015     Brian Kubisiak      Initial revision.
+ *      06 Jun 2015     Brian Kubisiak      Added method for FFT comparison.
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 #include "fft.h"
 
-extern complex root[SAMPLE_SIZE];
+#define ERROR_THRESHOLD 10
 
+extern complex root[SAMPLE_SIZE];       /* Roots of unity for the FFT. */
+extern unsigned char key[SAMPLE_SIZE];  /* Spectrum that will open the bowl. */
 
 /*
  * fft
@@ -114,4 +120,51 @@ void fft(complex *data)
         /* Reduce the stride for the next pass over the data. */
         stride /= 2;
     }
+}
+
+
+/*
+ * is_fft_match
+ *
+ * Description: Determines if the given frequency spectrum data is an
+ *              approximate match for the previously recorded data (the 'key').
+ *              The key that this data will be compared to is stored in ROM at
+ *              compile time. This function will first take the (integer) log2
+ *              of the magnitude of the input data in order to normalize it.
+ *              Then, the difference between this data and the key is
+ *              calculated, squared, and accumulated to get a measure of the
+ *              error. This is compared to a set threshold: above the threshold,
+ *              0 is returns; below the threshold, 1 is returned.
+ *
+ * Arguments:   data -- The data to compare to the key to determine whether or
+ *                      not there is a match.
+ *
+ * Returns:     Returns 0 if the input data is dissimilar to the key.
+ *              Returns 1 if the input data matches the key, within some error.
+ *
+ * Notes:       This function is very slow and probably won't give very good
+ *              results. Ideally, some more sophisticated analysis on a more
+ *              powerful chip should be used.
+ */
+unsigned char is_fft_match(complex *data)
+{
+    double mag;
+    unsigned int i;
+    unsigned char cmpval;
+    unsigned long err = 0;
+
+    /* Transform each point of the input data. */
+    for (i = 0; i < SAMPLE_SIZE; i++)
+    {
+        /* First, take the log of the magnitude of the data. This will fit in an
+         * 8-bit char. */
+        mag = data[i].real * data[i].real + data[i].imag * data[i].imag;
+        cmpval = (char)log10(mag);
+
+        /* Now calculate the absolute value of the error, and accumulate it. */
+        err += abs(cmpval - key[i]);
+    }
+
+    /* Return true iff the error is below the error threshold. */
+    return (err < ERROR_THRESHOLD);
 }

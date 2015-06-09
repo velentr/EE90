@@ -20,6 +20,7 @@
  * Revision History:
  *      05 Jun 2015     Brian Kubisiak      Initial revision.
  *      06 Jun 2015     Brian Kubisiak      Added external trigger.
+ *      08 Jun 2015     Brian Kubisiak      Added pullup resistor to INT0.
  */
 
 #include <avr/io.h>
@@ -37,6 +38,9 @@
 /* Initial values for external interrupt configuration. */
 #define EICRA_VAL   0x02
 #define EIMSK_VAL   0x01
+
+/* Add pullup resistor to interrupt pin. */
+#define PORTD_VAL   0xFF
 
 /* ORing this with ADCSRA will begin the data collection process. */
 #define ADCSTART    0x60
@@ -105,6 +109,9 @@ void init_adc(void)
 
     /* Reset the buffer collection. */
     adc_reset_buffer();
+
+    /* Add pullup resistor to the INT0 pin. */
+    PORTD = PORTD_VAL;
 
     /* Activate the external interrupt for triggering a recording. */
     EICRA = EICRA_VAL;

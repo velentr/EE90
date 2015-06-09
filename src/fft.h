@@ -19,6 +19,7 @@
  *
  * Revision History:
  *      16 Apr 2015     Brian Kubisiak      Initial revision.
+ *      06 Jun 2015     Brian Kubisiak      Added method for FFT comparison.
  */
 
 
@@ -49,6 +50,33 @@
  *              not be normalized to anything sensible.
  */
 void fft(complex *data);
+
+
+/*
+ * is_fft_match
+ *
+ * Description: Determines if the given frequency spectrum data is an
+ *              approximate match for the previously recorded data. The data
+ *              that this will be compared to is stored in ROM at compile time.
+ *              This function will first take the (integer) log2 of the
+ *              magnitude of the input data in order to normalize it. Then, the
+ *              difference between this data and the comparison values is
+ *              calculated, squared, and accumualted to get a measure of the
+ *              error. This is compared to a set threshold: above the threshold,
+ *              0 is returns; below the threshold, 1 is returned.
+ *
+ * Arguments:   data -- The data to compare to the previously-recorded data to
+ *                      determine whether or not there is a match.
+ *
+ * Returns:     Returns 0 if the input data is dissimilar to the comparison
+ *              data. Returns 1 if the input data matches the comparison data,
+ *              within some error.
+ *
+ * Notes:       This function is very slow and probably won't give very good
+ *              results. Ideally, some more sophisticated analysis on a more
+ *              powerful chip should be used.
+ */
+unsigned char is_fft_match(complex *data);
 
 
 #endif /* end of include guard: _FFT_H_ */

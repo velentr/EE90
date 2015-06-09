@@ -1,15 +1,11 @@
-#CC	    =	gcc
 CC	    =	avr-gcc
 SAMPLES     =	256
 LOG2SAMPLES =	8
-#CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
-		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES)
 CFLAGS	    =	-O2 -c -Wall -Wstrict-prototypes -DSAMPLE_SIZE=$(SAMPLES) \
 		-DLOG2_SAMPLE_SIZE=$(LOG2SAMPLES) -D__AVR_ATmega2560__ \
 		-mmcu=avr6
-#LDFLAGS     =	-O2
-LDFLAGS     =	-O2 -mmcu=avr6
-OBJECTS	    =	adc.o data.o fft.o mainloop.o proximity.o pwm.o roots.o
+LDFLAGS     =	-O2 -mmcu=avr6 -lm
+OBJECTS	    =	adc.o data.o fft.o key.o mainloop.o proximity.o pwm.o roots.o
 
 all: ee90-dogbowl
 
@@ -27,6 +23,9 @@ data.o: data.c data.h
 
 fft.o: fft.c fft.h data.h
 	$(CC) $(CFLAGS) fft.c
+
+key.o: key.c data.h
+	$(CC) $(CFLAGS) key.c
 
 mainloop.o: mainloop.c adc.h data.h fft.h proximity.h pwm.h
 	$(CC) $(CFLAGS) mainloop.c
