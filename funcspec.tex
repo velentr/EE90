@@ -1,4 +1,4 @@
-\documentclass[10pt]{article}           % Set default font size, document style.
+\documentclass[11pt]{article}           % Set default font size, document style.
 
 \usepackage[margin=1.2in]{geometry}     % Change margin sizes.
 \usepackage{fancyhdr}                   % Modify page header/footer.
@@ -201,6 +201,36 @@ sensors are no longer activated). At this point, the bowl will be reset.
     \caption{Finite state machine for controlling the dogbowl.}
 \label{fig:fsm}
 \end{figure}
+
+\section{Results}
+\label{sec:results}
+
+The end result of my design is moderately successful. The Fourier analysis will
+usually trigger after a few seconds of barking, and is unlikely to get a false
+positive. This project is a good proof-of-concept, and I believe with a few
+improvements, it would work fairly reliably.
+
+The first improvement I would make would be to use a DSP for the signal
+processing; with a more powerful chip, my project could perform a larger FFT and
+more sophisticated error analysis. Additionally, adding a faster ADC would allow
+me to sample the full audible frequency spectrum. This would likely reduce the
+false positives by comparing a wider spectrum of frequencies.
+
+Another limitation I encountered is that my microphone is poorly placed in the
+final design. When I was constructing the circuit, I did not consider how the
+whole design would be assembled and packaged. As a result, the microphone ended
+up in a place that did not get a clear audio signal. The most important lesson
+that I have learned from this project is to always think about the final
+packaging and design so that choices made at the beginning do not limit the
+design later.
+
+The last problem I had with my design is that the ultrasonic sensors should be
+angled upwards at a steeper angle. As they are now, they can be triggered by the
+floor. This is an issue because the bowl will remain open even after the dog has
+left. Again, anticipating the final design would have allowed me to fix this.
+
+\section{Source Code Listing}
+\label{sec:source_code_listing}
 
 \subsection{Analog Data Collection Function Declarations}
 \label{sub:data_collection_function_declarations}
